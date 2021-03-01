@@ -1,0 +1,24 @@
+db.orders.aggregate([  
+ { "$unwind" : "$meals"},
+ { "$project" : { "meals" : 1, "month" : { $month: "$date" }} },
+ { "$group" : {
+    "_id" : { "meal" : "$meals.name", "month":"$month" },
+    "total": { "$sum" : "$meals.servings" }
+    }  
+ },
+ { "$group" : {
+    "_id" : "$_id.month",
+    "sold" : { "$push" : {"meal" : "$_id.meal", "sum" : { "$sum" : "$total" }}}
+    }
+ },
+ { "$unwind" : "$sold" },
+ { "$sort" : { "sold.sum": -1 }},
+ { "$group" : {
+	"_id" : "$_id",
+    	"sold" : { "$push" : "$sold.meal" }
+	}
+ },
+ { "$sort" : { "_id" : 1 }},
+ { "$project" : { "_id" : 0, "month" : "$_id", "top-sold" : { "$slice" : ["$sold", 3]}}},
+ { "$out" : "aggregation_03" }
+])

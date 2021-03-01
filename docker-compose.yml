@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  mongo:
+    image: mongo:3.6.3
+  mongo-seed:
+    build: .
+    volumes:
+      - "./:/usr/result"
+    depends_on: 
+      - mongo

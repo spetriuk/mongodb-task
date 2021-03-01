@@ -1,0 +1,21 @@
+db.orders.aggregate([  
+ { "$unwind" : "$meals" },
+ { "$project" : { "meals" : 1, "month" : { $month: "$date" }}},
+ { "$group" : {
+    "_id" : { "meal" : "$meals.name", "order" : "$_id", "month" : "$month" }
+    }
+ },
+ { "$group" : {
+    "_id" : {"meal" : "$_id.meal", "month" : "$_id.month" },
+    "orders": { "$sum" : 1 }
+    }
+ },
+ { "$sort" : { "_id.month" : 1 }},
+ { "$group" : {
+    "_id" : "$_id.meal",
+    "orders": { "$push" : { "month" : "$_id.month", "orders" : "$orders" }}
+    }
+ },
+ { "$project" : { "_id" : 0, "meal" : "$_id", "orders" : "$orders" }},
+ { "$out" : "aggregation_02" }
+], { "allowDiskUse" : true } )
