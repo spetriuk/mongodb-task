@@ -3,7 +3,7 @@
 Write requests to generate reports on the work of the restaurant.
 
 There is a database where orders are stored. Each record looks like:
-```json
+```javascript
 {
   // ID
   "_id": {
@@ -72,7 +72,7 @@ db.orders.aggregate([
 ```json
 db.orders.aggregate([ 
  { "$unwind" : "$meals" },
- { "$project" : { "meals" : 1, "month" : { $month: "$date" }}},
+ { "$project" : { "meals" : 1, "month" : { "$month": "$date" }}},
  { "$group" : {
     "_id" : { "meal" : "$meals.name", "order" : "$_id", "month" : "$month" }
     }
@@ -108,7 +108,7 @@ db.orders.aggregate([
 ```json
 db.orders.aggregate([ 
  { "$unwind" : "$meals"},
- { "$project" : { "meals" : 1, "month" : { $month: "$date" }} },
+ { "$project" : { "meals" : 1, "month" : { "$month": "$date" }} },
  { "$group" : {
     "_id" : { "meal" : "$meals.name", "month":"$month" },
     "total": { "$sum" : "$meals.servings" }
